@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:piety_assignment/src/auth/login/view/login_view.dart';
+import 'package:piety_assignment/src/login/view/login_view.dart';
 
 class LogInPage extends StatelessWidget {
   const LogInPage({super.key});
