@@ -1,12 +1,39 @@
 part of 'location_bloc.dart';
 
-sealed class LocationState extends Equatable {
-  const LocationState();
-
-  @override
-  List<Object?> get props => [];
+enum LocationStatus {
+  unknown,
+  disabled,
+  permissionsDenied,
+  acquired,
 }
 
-final class LocationInitial extends LocationState {
-  const LocationInitial();
+final class LocationState extends Equatable {
+  const LocationState({
+    this.status = LocationStatus.unknown,
+    this.lat,
+    this.lon,
+  });
+
+  final LocationStatus status;
+  final double? lat;
+  final double? lon;
+
+  LocationState copyWith({
+    LocationStatus? status,
+    double? lat,
+    double? lon,
+  }) {
+    return LocationState(
+      status: status ?? this.status,
+      lat: lat ?? this.lat,
+      lon: lon ?? this.lon,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        status,
+        lat,
+        lon,
+      ];
 }
