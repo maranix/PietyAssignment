@@ -7,12 +7,13 @@ sealed class AuthEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class AuthInitial extends AuthEvent {
-  const AuthInitial();
-}
-
 final class AuthSuccess extends AuthEvent {
-  const AuthSuccess();
+  const AuthSuccess({this.user});
+
+  final User? user;
+
+  @override
+  List<Object?> get props => [user];
 }
 
 final class AuthFailure extends AuthEvent {
