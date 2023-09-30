@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
 
     _locationBloc = context.read<LocationBloc>();
 
-    _locationBloc.add(const CheckLocationPermissions());
+    _locationBloc.add(const CheckLocationPermissions(request: true));
   }
 
   @override
