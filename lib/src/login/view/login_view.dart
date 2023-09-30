@@ -3,6 +3,8 @@ import 'package:motion_toast/motion_toast.dart';
 import 'package:motion_toast/resources/arrays.dart';
 import 'package:piety_assignment/blocs/blocs.dart';
 import 'package:piety_assignment/src/login/login.dart';
+import 'package:piety_assignment/src/login/widgets/send_otp_view.dart';
+import 'package:piety_assignment/src/login/widgets/verify_otp_view.dart';
 
 class LogInView extends StatefulWidget {
   const LogInView({super.key});
@@ -14,8 +16,12 @@ class LogInView extends StatefulWidget {
 class _LogInViewState extends State<LogInView> {
   late final PageController _pageController;
 
-  void _showToast(BuildContext context, MotionToastType type, String title,
-      String description) {
+  void _showToast(
+    BuildContext context,
+    MotionToastType type, {
+    required String title,
+    required String description,
+  }) {
     return switch (type) {
       MotionToastType.info => MotionToast.info(
           title: Text(title),
@@ -54,8 +60,7 @@ class _LogInViewState extends State<LogInView> {
           listener: (context, state) {
             switch (state.status) {
               case LogInStatus.initial:
-                _pageController.animateTo(
-                  0,
+                _pageController.previousPage(
                   duration: const Duration(milliseconds: 500),
                   curve: Curves.bounceIn,
                 );
@@ -63,12 +68,14 @@ class _LogInViewState extends State<LogInView> {
                 _showToast(
                   context,
                   MotionToastType.info,
-                  'OTP Sent',
-                  'An otp has been sent',
+                  title: 'OTP Sent',
+                  description: 'An otp has been sent',
                 );
 
-                _pageController.animateTo(
-                  1,
+                context.read<LogInBloc>().add(
+                    const LogInStateUpdated(status: LogInStatus.verifyOTP));
+              case LogInStatus.verifyOTP:
+                _pageController.nextPage(
                   duration: const Duration(milliseconds: 500),
                   curve: Curves.bounceIn,
                 );
@@ -76,9 +83,11 @@ class _LogInViewState extends State<LogInView> {
                 _showToast(
                   context,
                   MotionToastType.success,
-                  'OTP verified',
-                  "You'll be redirected to a new page shortly",
+                  title: 'OTP verified',
+                  description: "You'll be redirected to a new page shortly",
                 );
+
+                context.read<AuthBloc>().add(AuthSuccess(user: state.user));
               default:
             }
           },
@@ -90,18 +99,25 @@ class _LogInViewState extends State<LogInView> {
               _ => _showToast(
                   context,
                   MotionToastType.error,
-                  'Login failed',
-                  state.errorMessage,
+                  title: 'Login failed',
+                  description: state.errorMessage,
                 ),
             };
           },
         ),
       ],
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Login'),
+          centerTitle: true,
+        ),
         body: PageView(
           physics: const NeverScrollableScrollPhysics(),
           controller: _pageController,
-          children: [],
+          children: const [
+            SendOTPView(),
+            VerifyOTPView(),
+          ],
         ),
       ),
     );

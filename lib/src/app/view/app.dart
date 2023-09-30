@@ -41,15 +41,16 @@ class _AppConfiguration extends StatelessWidget {
                     Navigator.pushNamedAndRemoveUntil(
                         context, Routes.login, routePredicate);
                   case AuthStatus.signUpInProgress:
-                    Navigator.pushNamedAndRemoveUntil(context, Routes.signup,
-                    routePredicate);
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, Routes.signup, routePredicate);
                   case AuthStatus.authenticated:
-                    Navigator.pushNamedAndRemoveUntil(context, Routes.home,
-                    routePredicate);
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, Routes.home, routePredicate);
                   default:
-                    const SizedBox.shrink();
+                    null;
                 }
               },
+              child: const SizedBox.shrink(),
             ),
         Routes.login: (context) => const LogInPage(),
         Routes.signup: (context) => const SignUpPage(),

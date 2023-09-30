@@ -20,15 +20,21 @@ class LogInBloc extends Bloc<LogInEvent, LogInState> {
       state.copyWith(
         status: event.status ?? state.status,
         phoneNumber: event.phoneNumber ?? state.phoneNumber,
+        otp: event.otp ?? state.otp,
         verificationId: event.verificationId ?? state.verificationId,
         resendToken: event.resendToken ?? state.resendToken,
+        user: event.user ?? state.user,
       ),
     );
   }
 
   Future<void> _onSendOTP(SendOTP event, Emitter<LogInState> emit) async {
+    emit(state.copyWith(status: LogInStatus.sendingOTP));
+
+    // Hardcoding the country code is not right but in this case its ok since its an assignment.
+    // In a real app we should let the user choose their own country code.
     await _auth.verifyPhoneNumber(
-      phoneNumber: state.phoneNumber,
+      phoneNumber: '+91${state.phoneNumber}',
       verificationCompleted: _verificationCompleted,
       verificationFailed: _verificationFailed,
       codeSent: _codeSent,
@@ -37,9 +43,11 @@ class LogInBloc extends Bloc<LogInEvent, LogInState> {
   }
 
   Future<void> _onVerifyOTP(VerifyOTP event, Emitter<LogInState> emit) async {
+    emit(state.copyWith(status: LogInStatus.verifying));
+
     final credentials = PhoneAuthProvider.credential(
       verificationId: state.verificationId,
-      smsCode: event.otp,
+      smsCode: state.otp,
     );
 
     await _handleSignIn(credentials);
@@ -47,6 +55,7 @@ class LogInBloc extends Bloc<LogInEvent, LogInState> {
 
   void _onError(LogInError event, Emitter<LogInState> emit) {
     state.copyWith(
+      status: LogInStatus.failed,
       errorStatus: event.error,
       errorMessage: event.message,
     );
@@ -99,8 +108,13 @@ class LogInBloc extends Bloc<LogInEvent, LogInState> {
   }
 
   void _codeSent(String verificationId, int? resendToken) {
-    add(LogInStateUpdated(
-        verificationId: verificationId, resendToken: resendToken));
+    add(
+      LogInStateUpdated(
+        status: LogInStatus.otpSent,
+        verificationId: verificationId,
+        resendToken: resendToken,
+      ),
+    );
   }
 
   void _codeAutoRetrievalTimeout(String verificationId) {
@@ -109,9 +123,9 @@ class LogInBloc extends Bloc<LogInEvent, LogInState> {
 
   Future<void> _handleSignIn(AuthCredential credential) async {
     try {
-      await _auth.signInWithCredential(credential);
+      final cred = await _auth.signInWithCredential(credential);
 
-      add(const LogInStateUpdated(status: LogInStatus.verified));
+      add(LogInStateUpdated(status: LogInStatus.verified, user: cred.user));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-phone-number') {
         add(

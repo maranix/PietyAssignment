@@ -1,12 +1,20 @@
 part of 'signup_bloc.dart';
 
 final class SignUpState extends Equatable {
-  const SignUpState();
+  const SignUpState({
+    this.name = '',
+  });
 
-  SignUpState copyWith() {
-    return const SignUpState();
+  final String name;
+
+  SignUpState copyWith({
+    String? name,
+  }) {
+    return SignUpState(
+      name: name ?? this.name,
+    );
   }
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [name];
 }

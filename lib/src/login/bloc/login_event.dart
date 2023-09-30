@@ -11,21 +11,27 @@ final class LogInStateUpdated extends LogInEvent {
   const LogInStateUpdated({
     this.status,
     this.phoneNumber,
+    this.otp,
     this.verificationId,
     this.resendToken,
+    this.user,
   });
 
   final LogInStatus? status;
   final String? phoneNumber;
+  final String? otp;
   final String? verificationId;
   final int? resendToken;
+  final User? user;
 
   @override
   List<Object?> get props => [
         status,
         phoneNumber,
+        otp,
         verificationId,
         resendToken,
+        user,
       ];
 }
 
@@ -34,16 +40,7 @@ final class SendOTP extends LogInEvent {
 }
 
 final class VerifyOTP extends LogInEvent {
-  const VerifyOTP({
-    required this.otp,
-  });
-
-  final String otp;
-
-  @override
-  List<Object?> get props => [
-        otp,
-      ];
+  const VerifyOTP();
 }
 
 final class LogInError extends LogInEvent {
