@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:piety_assignment/blocs/blocs.dart';
 
 class HomeView extends StatefulWidget {
@@ -28,25 +29,28 @@ class _HomeViewState extends State<HomeView> {
         centerTitle: true,
       ),
       body: const Center(
-        child: LocationCoordinatesWidget(),
+        child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            UserLocationWidget(),
+          ],
+        ),
       ),
     );
   }
 }
 
-class LocationCoordinatesWidget extends StatelessWidget {
-  const LocationCoordinatesWidget({super.key});
+class UserLocationWidget extends StatelessWidget {
+  const UserLocationWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<LocationBloc>().state;
+    final placemark =
+        context.select<LocationBloc, LocationState>((bloc) => bloc.state).place;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text('lat: ${state.lat}'),
-        Text('lon: ${state.lon}'),
-      ],
-    );
+    return switch (placemark) {
+      Placemark p => Text('${p.locality}, ${p.country}'),
+      _ => const Text('Somewhere on earth'),
+    };
   }
 }

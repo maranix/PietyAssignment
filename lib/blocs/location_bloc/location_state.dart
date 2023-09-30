@@ -10,30 +10,25 @@ enum LocationStatus {
 final class LocationState extends Equatable {
   const LocationState({
     this.status = LocationStatus.unknown,
-    this.lat,
-    this.lon,
+    this.place,
   });
 
   final LocationStatus status;
-  final double? lat;
-  final double? lon;
+  final geocoding.Placemark? place;
 
   LocationState copyWith({
     LocationStatus? status,
-    double? lat,
-    double? lon,
+    geocoding.Placemark? place,
   }) {
     return LocationState(
       status: status ?? this.status,
-      lat: lat ?? this.lat,
-      lon: lon ?? this.lon,
+      place: place ?? this.place,
     );
   }
 
   @override
   List<Object?> get props => [
         status,
-        lat,
-        lon,
+        place,
       ];
 }

@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:developer' as dev;
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:geolocator/geolocator.dart';
 
 part 'location_event.dart';
@@ -42,6 +44,8 @@ final class LocationBloc extends Bloc<LocationEvent, LocationState> {
 
     if (permission == LocationPermission.denied) {
       emit(state.copyWith(status: LocationStatus.permissionsDenied));
+    } else {
+      emit(state.copyWith(status: LocationStatus.acquired));
     }
   }
 
@@ -52,16 +56,41 @@ final class LocationBloc extends Bloc<LocationEvent, LocationState> {
     add(const CheckLocationPermissions());
 
     final pos = await Geolocator.getLastKnownPosition();
-    emit(state.copyWith(lat: pos?.latitude, lon: pos?.longitude));
+
+    emit(state.copyWith(place: await _getPlaceFromPosition(pos)));
 
     try {
       final pos = await Geolocator.getCurrentPosition();
 
-      emit(state.copyWith(lat: pos.latitude, lon: pos.longitude));
+      emit(state.copyWith(place: await _getPlaceFromPosition(pos)));
     } on LocationServiceDisabledException {
       emit(state.copyWith(status: LocationStatus.disabled));
     } on Exception catch (e) {
-      dev.log(e.toString(), error: e);
+      dev.log(
+        e.toString(),
+        name: 'Geolocator',
+        error: e,
+      );
+    }
+  }
+
+  Future<geocoding.Placemark?> _getPlaceFromPosition(Position? pos) async {
+    if (pos == null) {
+      return null;
+    }
+
+    try {
+      final place =
+          await geocoding.placemarkFromCoordinates(pos.latitude, pos.longitude);
+
+      return place.firstOrNull;
+    } on PlatformException catch (e) {
+      dev.log(
+        e.toString(),
+        name: 'Geocoding',
+        error: e,
+      );
+      return null;
     }
   }
 
