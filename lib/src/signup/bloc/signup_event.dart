@@ -8,7 +8,14 @@ sealed class SignUpEvent extends Equatable {
 }
 
 final class SignUpDetailsChanged extends SignUpEvent {
-  const SignUpDetailsChanged();
+  const SignUpDetailsChanged({
+    this.name,
+  });
+
+  final String? name;
+
+  @override
+  List<Object?> get props => [name];
 }
 
 final class SignUpDetailsSend extends SignUpEvent {

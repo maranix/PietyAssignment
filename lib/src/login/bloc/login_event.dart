@@ -7,28 +7,54 @@ sealed class LogInEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class SendOTP extends LogInEvent {
-  const SendOTP({
-    required this.phone,
+final class LogInStateUpdated extends LogInEvent {
+  const LogInStateUpdated({
+    this.status,
+    this.phoneNumber,
+    this.otp,
+    this.verificationId,
+    this.resendToken,
+    this.user,
   });
 
-  final String phone;
+  final LogInStatus? status;
+  final String? phoneNumber;
+  final String? otp;
+  final String? verificationId;
+  final int? resendToken;
+  final User? user;
 
   @override
   List<Object?> get props => [
-        phone,
+        status,
+        phoneNumber,
+        otp,
+        verificationId,
+        resendToken,
+        user,
       ];
 }
 
+final class SendOTP extends LogInEvent {
+  const SendOTP();
+}
+
 final class VerifyOTP extends LogInEvent {
-  const VerifyOTP({
-    required this.otp,
+  const VerifyOTP();
+}
+
+final class LogInError extends LogInEvent {
+  const LogInError({
+    required this.error,
+    required this.message,
   });
 
-  final String otp;
+  final LogInErrorStatus error;
+  final String message;
 
   @override
   List<Object?> get props => [
-        otp,
+        error,
+        message,
       ];
 }
