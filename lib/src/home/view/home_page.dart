@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: () => Navigator.pop(context),
               child: const Text('Cancel'),
             ),
-            FilledButton(
+            FilledButton.tonal(
               onPressed: () async => await _locationBloc.openSettings(),
               child: const Text('Open'),
             ),
@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: () => Navigator.pop(context),
               child: const Text('Cancel'),
             ),
-            FilledButton(
+            FilledButton.tonal(
               onPressed: () async => await _locationBloc.openAppSettings(),
               child: const Text('Grant'),
             ),
